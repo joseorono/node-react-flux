@@ -1,6 +1,7 @@
 
 var gulp        = require ('gulp');
 var uglify      = require ('gulp-uglify');
+var watch       = require ('gulp-watch');
 var htmlreplace = require ('gulp-html-replace');
 var source      = require ('vinyl-source-stream');
 var browserify  = require ('browserify');
@@ -9,41 +10,74 @@ var reactify    = require ('reactify');
 var streamify   = require ('gulp-streamify');
 var clean       = require ('gulp-clean');
 var sass        = require ('gulp-sass');
+var run         = require ('run-sequence');
 
 var path = {
   HTML         : './src/index.html',
   ENTRY_POINT  : './src/jsx/App.jsx',
-  ALL          : [ 'src/sass/*.scss', 'src/index.html' ],
-  JS           : [ 'dist/src/js/*.js', 'dist/src/js/**/*.js' ],
-  CSS          : [ 'dist/src/css/*.css' ],
-  SASS         : [ 'src/sass/*.scss'    ],
+  SASS         : 'src/sass/**/*.scss',
+  CSS          : 'src/css/**/*',
+  JS           : 'src/js/**/*',
+  DIST_CSS     : 'dist/src/css/**/*',
+  DIST_JS      : 'dist/src/js/**/*',
   DEST         : 'dist',
   DEST_SRC     : 'dist/src',
   DEST_BUILD   : 'dist/build',
   DEST_SRC_JS  : 'dist/src/js',
   DEST_SRC_CSS : 'dist/src/css',
   OUT          : 'js/App.js',
-  MINIFIED_OUT : 'js/App.min.js'
+  MINIFIED_OUT : 'js/App.min.js',
+  ALL : [
+    'src/index.html',
+    'src/js/**/*',
+    'src/css/**/*',
+    'src/sass/**/*.scss'
+  ]
 };
 
 /*
- *  Cleans the dist/css & dist/js directories --
+ *  Cleans the dist/js directory --
  *  -- runs on init
  */
-gulp.task ('clean', function () {
-  gulp.src (path.JS)
-    .pipe (clean ())
-    .on ('error', handleError);.
-  gulp.src (path.CSS)
+gulp.task ('clean-js', function () {
+  return gulp.src (path.DIST_JS)
     .pipe (clean ())
     .on ('error', handleError);
 });
 
 /*
- *  Copies specified files to their designated locations
+ *  Cleans the dist/css directory --
+ *  -- runs on init
  */
-gulp.task ('clone', function () {
-  gulp.src (path.HTML)
+gulp.task ('clean-css', function () {
+  return gulp.src (path.DIST_CSS)
+    .pipe (clean ())
+    .on ('error', handleError);
+});
+
+/*
+ *  Copies src/css files into the dist/src/css directory
+ */
+gulp.task ('clone-css', function () {
+  return gulp.src (path.CSS)
+    .pipe (gulp.dest (path.DEST_SRC_CSS))
+    .on('error', handleError);
+});
+
+/*
+ *  Copies src/js files into the dist/src/js directory
+ */
+gulp.task ('clone-js', function () {
+  return gulp.src (path.JS)
+    .pipe (gulp.dest (path.DEST_SRC_JS))
+    .on('error', handleError);
+});
+
+/*
+ *  Copies src/html files into the dist/ directory
+ */
+gulp.task ('clone-html', function () {
+  return gulp.src (path.HTML)
     .pipe (gulp.dest (path.DEST))
     .on('error', handleError);
 });
@@ -51,8 +85,8 @@ gulp.task ('clone', function () {
 /*
  *  Transforms Sass (foo.scss) files into regular CSS files
  */
-gulp.task('sass', ['clean-css'], function () {
-  gulp.src (path.SASS)
+gulp.task ('sass', function () {
+  return gulp.src (path.SASS)
     .pipe (sass ().on ('error', sass.logError))
     .on ('error', handleError)
     .pipe (gulp.dest (path.DEST_SRC_CSS))
@@ -60,10 +94,21 @@ gulp.task('sass', ['clean-css'], function () {
 });
 
 /*
+ *  Main development sequence
+ */
+gulp.task ('dev-build-sequence', function () {
+  return run (
+    ['clean-js', 'clean-css'],
+    ['clone-js', 'clone-css', 'clone-html'],
+    ['sass']
+  );
+})
+
+/*
  *  Main development task
  */
-gulp.task ('watch', ['clean', 'sass', 'clone'], function () {
-  var watcher  = watchify(browserify ({
+gulp.task ('watch', ['dev-build-sequence'],function () {
+  var watcher  = watchify (browserify ({
     entries   : [path.ENTRY_POINT],
     transform : [reactify],
      /** Tells you the jsx line num instead of the single doc line num **/
@@ -71,6 +116,17 @@ gulp.task ('watch', ['clean', 'sass', 'clone'], function () {
     fullPaths : true,
     cache: {}, packageCache: {}
   }));
+
+  watch (path.ALL, function () {
+    run (['dev-build-sequence'], function () {
+      watcher.bundle ()
+        .on ('error', handleError)
+        .pipe (source(path.OUT))
+        .on ('error', handleError)
+        .pipe (gulp.dest(path.DEST_SRC))
+        .on ('error', handleError);
+    });
+  });
 
   return watcher.on  ('update', function () {
     /** Watches for updates and recompiles into a single js file **/
@@ -81,7 +137,7 @@ gulp.task ('watch', ['clean', 'sass', 'clone'], function () {
       .pipe (gulp.dest (path.DEST_SRC))
       .on ('error', handleError);
 
-    console.log ('Successfully compiled JSX fils to JS.');
+      console.info ("React (JSX) files successfully updated.");
   })
     /** On initial load we will compile all jsx to js **/
     .bundle ()
@@ -93,7 +149,6 @@ gulp.task ('watch', ['clean', 'sass', 'clone'], function () {
 });
 
 gulp.task ('default', ['watch']);
-gulp.watch (path.ALL, ['sass', 'clone']);
 
 /*
  * Handle errors
