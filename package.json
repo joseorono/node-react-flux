@@ -1,0 +1,28 @@
+{
+  "name": "React-Flux-Starter",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Visionist, Inc.",
+  "description": "Starter React/Flux/Sass/Node project for just about anyone.",
+  "main": "app.js",
+  "dependencies": {
+    "better-console": "~0.2.4",
+    "body-parser": "~1.12.3",
+    "express": "~4",
+    "gulp": "~3.9.0",
+    "gulp-clean": "^0.3.1",
+    "gulp-html-replace": "~1.5.1",
+    "gulp-sass": "^2.0.3",
+    "gulp-uglify": "~1.2.0",
+    "react": "~0.13.3",
+    "flux": "~2.0.3",
+    "jquery": "~2.1.4"
+  },
+  "dev-dependencies": {
+    "vinyl-source-stream": "^1.1.0",
+    "gulp-streamify": "0.0.5",
+    "browserify": "^10.2.4",
+    "reactify": "^1.1.1",
+    "watchify": "^3.2.3"
+  }
+}
