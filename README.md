@@ -13,35 +13,34 @@ Don't worry, Sass is in there too. We added a Sass directory inside src/ for wri
 Mostly everything that you shouldn't be worrying about. You focus on writing your code inside the src/ directory, and Gulp will compile whatever needs to be compiled and place them inside the distribution (dist/) directory that Express happens to be pointing at.
 
 ## Let's get started
-1. Clone the repository
-```
-git clone https://github.com/VisionistInc/node-react-flux.git
-```
+* Clone the repository
+  ```
+  git clone https://github.com/VisionistInc/node-react-flux.git
+  ```
 
-2. Go into the cloned repository's directory
-```
-cd node-react-flux
-```
+* Go into the cloned repository's directory
+  ```
+  cd node-react-flux
+  ```
+* Install Gulp and Nodemon globally
+  ```
+  npm install -g gulp
+  npm install -g nodemon
+  ```
 
-3. Install Gulp and Nodemon globally
-```
-npm install -g gulp
-npm install -g nodemon
-```
+* Install dependencies
+  ```
+  npm install
+  ```
 
-4. Install dependencies
-```
-npm install
-```
+* Start Gulp
+  ```
+  gulp
+  ```
+  Upon start, Gulp will automatically compile everything that needs to be compiled, and place it inside the distribution (dist/) directory for you. After initial load, it'll watch over your files, updating dist/ on save. Caught errors within Gulp will be displayed here.
 
-5. Start Gulp
-```
-gulp
-```
-Upon start, Gulp will automatically compile everything that needs to be compiled, and place it inside the distribution (dist/) directory for you. After initial load, it'll watch over your files, updating dist/ on save. Caught errors within Gulp will be displayed here.
-
-6. Open another Terminal/Command-Line window or tab, and start the Node app:
-```
-nodemon
-```
+* Open another Terminal/Command-Line window or tab, and start the Node app:
+  ```
+  nodemon
+  ```
 Nodemon will watch over your Node server files and will restart the server automatically for you.
