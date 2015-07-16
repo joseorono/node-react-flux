@@ -2,15 +2,15 @@
 
 > Gulp ready Node.js application structure with everything you need to hit the ground running with React.js, Flux, and Sass.
 
-Let's face it, getting React to work with Flux is not as straightforward as it seems, and compiling your React files and bundling them into one standalone Javascript file with Browserify and Gulp can be another time wasting challenge. Things that should take 10 minutes end up taking forever.
+Let's face it, getting React to work with Flux is not as straightforward as it seems, and compiling your React files, bundling them into one standalone Javascript file with Browserify and Gulp can be another time wasting challenge. Things that should take 10 to 15 minutes minutes, end up taking forever.
 
-Here at Visionist, we understand how frustrating it can be in getting all those technologies set up to then finally start coding something relevant, so we decided to do something about it. With this starter template, we hope to simplify the process of starting Node.js applications leveraging React and Flux. Anyone familiar with Node and React can pick it up fast. Everything is replaceable, so just follow the sample code's lead, and you should be good to go.
+At Visionist, we understand how frustrating it can be getting all those technologies set up to then finally start coding something relevant, so we decided to give Flux React developers a hand. With this starter template, we hope to simplify the process of starting Node.js applications leveraging React and Flux. We tried to document most of the React-Flux interaction code in a very straightforward, easy-to-understand manner, so that anyone familiar with Node and React can pick it up fast. Everything is replaceable, so just follow the sample code's lead, and you should be good to go.
 
 ## What about Sass?
-Don't worry, Sass is in there too. We added a Sass directory for writing all of your Sass files. We also made Gulp watch over your Sass files to compile on save. You're welcome. :-)
+Don't worry, Sass is in there too. We added a Sass directory inside src/ for writing all of your Sass files. We also made Gulp watch over your Sass files to compile on save - see below.
 
 ## So what exactly will Gulp do for me?
-Everything. You focus on writing your code, Gulp will compile your src/ files and place them inside the distribution (dist/) directory that Express happens to be pointing at. Oh, did we mention Express is built into this thing too?
+Mostly everything that you shouldn't be worrying about. You focus on writing your code inside the src/ directory, and Gulp will compile whatever needs to be compiled and place them inside the distribution (dist/) directory that Express happens to be pointing at.
 
 ## Let's get started
 1. Clone the repository
