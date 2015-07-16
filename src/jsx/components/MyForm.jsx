@@ -1,23 +1,25 @@
 
 /*
- *  Everything Flux --
- *  -- require your stores and actions leveraged here.
- *  -- NOTE: Javascript (foo.js) files DON'T require extensions upon require.
+ *  -- Flux : Stores & Actions
+ *  Require your stores and actions here.
+ *  NOTE: Javascript (foo.js) files DON'T require extensions upon require.
  */
-var AppActions = require ('../actions/AppActions');
-// var MyStore = require ('./stores/MyStore');
+var MyActions = require ('../actions/MyActions');
 
 var MyForm = React.createClass ({
   /*
-   *  Custom handleSubmit
+   *  handleNameChange runs and invokes the MyActions.setName method passing it the new name to set.
    */
   handleNameChange: function (event) {
-    AppActions.setName ({
+    MyActions.setName ({
       name: React.findDOMNode (this.refs.name).value.trim ()
     });
     event.preventDefault ();
   },
-
+ /*
+  *  A user clicks “Submit” wanting to set his name on the page header,
+  *  which invokes a method on this component which we’ll call handleNameChange.
+  */
   render: function () {
     return (
       <form className="myForm" onSubmit={this.handleNameChange}>
