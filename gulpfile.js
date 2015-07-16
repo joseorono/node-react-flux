@@ -13,7 +13,7 @@ var sass        = require ('gulp-sass');
 var run         = require ('run-sequence');
 
 var path = {
-  HTML         : './src/index.html',
+  HTML         : './src/*.html',
   ENTRY_POINT  : './src/jsx/App.jsx',
   SASS         : 'src/sass/**/*.scss',
   CSS          : 'src/css/**/*',
@@ -27,17 +27,10 @@ var path = {
   DEST_SRC_CSS : 'dist/src/css',
   OUT          : 'js/App.js',
   MINIFIED_OUT : 'js/App.min.js',
-  ALL : [
-    'src/index.html',
-    'src/js/**/*',
-    'src/css/**/*',
-    'src/sass/**/*.scss'
-  ]
 };
 
 /*
- *  Cleans the dist/js directory --
- *  -- runs on init
+ *  Cleans the dist/js directory.
  */
 gulp.task ('clean-js', function () {
   return gulp.src (path.DIST_JS)
@@ -46,8 +39,7 @@ gulp.task ('clean-js', function () {
 });
 
 /*
- *  Cleans the dist/css directory --
- *  -- runs on init
+ *  Cleans the dist/css directory.
  */
 gulp.task ('clean-css', function () {
   return gulp.src (path.DIST_CSS)
@@ -56,34 +48,16 @@ gulp.task ('clean-css', function () {
 });
 
 /*
- *  Copies src/css files into the dist/src/css directory
+ *  Copies src/html files into the dist/ directory.
  */
-gulp.task ('clone-css', function () {
-  return gulp.src (path.CSS)
-    .pipe (gulp.dest (path.DEST_SRC_CSS))
-    .on('error', handleError);
-});
-
-/*
- *  Copies src/js files into the dist/src/js directory
- */
-gulp.task ('clone-js', function () {
-  return gulp.src (path.JS)
-    .pipe (gulp.dest (path.DEST_SRC_JS))
-    .on('error', handleError);
-});
-
-/*
- *  Copies src/html files into the dist/ directory
- */
-gulp.task ('clone-html', function () {
+gulp.task ('clone', function () {
   return gulp.src (path.HTML)
     .pipe (gulp.dest (path.DEST))
     .on('error', handleError);
 });
 
 /*
- *  Transforms Sass (foo.scss) files into regular CSS files
+ *  Transforms Sass (foo.scss) files into regular CSS files.
  */
 gulp.task ('sass', function () {
   return gulp.src (path.SASS)
@@ -94,20 +68,9 @@ gulp.task ('sass', function () {
 });
 
 /*
- *  Main development sequence
- */
-gulp.task ('dev-build-sequence', function () {
-  return run (
-    ['clean-js', 'clean-css'],
-    ['clone-js', 'clone-css', 'clone-html'],
-    ['sass']
-  );
-})
-
-/*
  *  Main development task
  */
-gulp.task ('watch', ['dev-build-sequence'],function () {
+gulp.task ('watch', ['sass', 'clone'], function () {
   var watcher  = watchify (browserify ({
     entries   : [path.ENTRY_POINT],
     transform : [reactify],
@@ -117,27 +80,26 @@ gulp.task ('watch', ['dev-build-sequence'],function () {
     cache: {}, packageCache: {}
   }));
 
-  watch (path.ALL, function () {
-    run (['dev-build-sequence'], function () {
-      watcher.bundle ()
-        .on ('error', handleError)
-        .pipe (source(path.OUT))
-        .on ('error', handleError)
-        .pipe (gulp.dest(path.DEST_SRC))
-        .on ('error', handleError);
-    });
+  watch (path.SASS, function () {
+    run (['clean-css'], ['sass']);
+  });
+
+  watch (path.HTML, function () {
+    run (['clone']);
   });
 
   return watcher.on  ('update', function () {
-    /** Watches for updates and recompiles into a single js file **/
-    watcher.bundle ()
-      .on ('error', handleError)
-      .pipe (source (path.OUT))
-      .on ('error', handleError)
-      .pipe (gulp.dest (path.DEST_SRC))
-      .on ('error', handleError);
+    run (['clean-js'], function () {
+      /** Watches for updates and recompiles into a single js file **/
+      watcher.bundle ()
+        .on ('error', handleError)
+        .pipe (source (path.OUT))
+        .on ('error', handleError)
+        .pipe (gulp.dest (path.DEST_SRC))
+        .on ('error', handleError);
 
-      console.info ("React (JSX) files successfully updated.");
+        console.info ("React (JSX) files successfully updated.");
+    });
   })
     /** On initial load we will compile all jsx to js **/
     .bundle ()
@@ -151,8 +113,9 @@ gulp.task ('watch', ['dev-build-sequence'],function () {
 gulp.task ('default', ['watch']);
 
 /*
- * Handle errors
- * -- prevents Gulp from crashing
+ *  -- Error Handler
+ *  Prevents Gulp from crashing.
+ *  Displays errors in console.
  */
 function handleError (error) {
   console.log (error.toString ());
