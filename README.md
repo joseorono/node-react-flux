@@ -46,4 +46,4 @@ Mostly everything that you shouldn't be worrying about. You focus on writing you
 Nodemon will watch over your Node server files and will restart the server automatically for you.
 
 ## References
-1. [Architecting React.js Apps with Flux](http://tylermcginnis.com/reactjs-tutorial-pt-3-architecting-react-js-apps-with-flux/) by Tyler McGinnis
+- [Architecting React.js Apps with Flux](http://tylermcginnis.com/reactjs-tutorial-pt-3-architecting-react-js-apps-with-flux/) by Tyler McGinnis, April 16, 2015
