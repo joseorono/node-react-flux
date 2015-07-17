@@ -6,7 +6,7 @@ var MyActions = {
   setName: function (object) {
 
     /*
-     *  NOTE: Regarding REST or Ajax calls
+     *  Regarding REST or Ajax calls
      *
      *  Think of how data travels in a Flux app; the pattern remains the same
      *  with REST or Ajax calls. Your action makes a request, gets the data,
@@ -14,7 +14,7 @@ var MyActions = {
      *  from the Action handler to the Dispatcher and then finally to the store where
      *  it would be updated and emit the change event.
      *
-     *  It is best practice to use some sort of Promise library.
+     *  NOTE: It is best practice to use some sort of Promise library.
      */
 
     MyDispatcher.handleAction ({
