@@ -16,6 +16,7 @@ var MyForm = React.createClass ({
     });
     event.preventDefault ();
   },
+
  /*
   *  A user clicks “Submit” wanting to set his name on the page header,
   *  which invokes a method on this component which we’ll call handleNameChange.

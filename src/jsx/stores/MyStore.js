@@ -22,7 +22,11 @@ var _store = {
 };
 
 var setName  = function (data) {
-  _store.name = data.name;
+  if (data.name) {
+    _store.name = data.name;
+  } else {
+    _store.name = "World";
+  }
 };
 
 var MyStore = ObjectAssign ({}, EventEmitter.prototype, {
