@@ -14,36 +14,56 @@ Mostly everything that you shouldn't be worrying about. You focus on writing you
 
 ## Get Started
 * Clone the repository
-  ```
-  git clone https://github.com/VisionistInc/node-react-flux.git
-  ```
+```
+git clone git@github.com:VisionistInc/node-react.git
+```
 
 * Go into the cloned repository's directory
-  ```
-  cd node-react-flux
-  ```
-* Install Gulp and Nodemon globally
-  ```
-  npm install -g gulp
-  npm install -g nodemon
-  ```
+```
+cd node-react
+```
 
 * Install dependencies
+```
+npm install
+```
+
+* Install Gulp
+```
+npm install -g gulp
+```
+
+## Building the static files
+Bundled static files will live inside the ```./dist``` directory
+```
++ dist/
+    |-- index.html
+    |-- App.js
+    \-- App.css
+```
+
+- Bundle static files and exit on finish
+
   ```
-  npm install
+  npm run-script build
   ```
 
-* Start Gulp
-  ```
-  gulp
-  ```
-  Upon start, Gulp will automatically compile everything that needs to be compiled, and place it inside the distribution (dist/) directory for you. After initial load, it'll watch over your files, updating dist/ on save. Caught errors within Gulp will be displayed here.
+## Running the application for Development
+- Bundle the static files, watch over development files, and start the server
+```
+npm run-script dev
+```
+Gulp will watch over all of your files and rebuild on save. It will also restart the Node server whenever you edit or modify any of the server files
 
-* Open another Terminal/Command-Line window or tab, and start the Node app:
-  ```
-  nodemon
-  ```
-Nodemon will watch over your Node server files and will restart the server automatically for you.
+- Open your browser and go to ```http://localhost:3003```
+
+## Running the application for Production
+- Bundle the static files and start the server
+```
+npm start
+```
+
+- Open your browser and go to ```http://localhost:3003```
 
 ## References
 - [Architecting React.js Apps with Flux](http://tylermcginnis.com/reactjs-tutorial-pt-3-architecting-react-js-apps-with-flux/) by Tyler McGinnis, April 16, 2015
