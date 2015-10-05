@@ -1,3 +1,4 @@
+var React = require ('react');
 
 /*
  *  -- Flux : Stores & Actions
@@ -13,16 +14,12 @@ var MyStore = require ('./stores/MyStore');
  */
 var MyForm = require ('./components/MyForm.jsx');
 
-/*
- *  -- React : Main Parent Component
- */
 var App = React.createClass ({
   getInitialState: function () {
     return {
       name : MyStore.getName ()
     };
   },
-
   /*
    *  When our component mounts, we pass _onChange to MyStore.addChangeListener
    *  which makes it so whenever the Store hears the “CHANGE” event, it will run _onChange
@@ -35,7 +32,6 @@ var App = React.createClass ({
   componentWillUnmount: function () {
     MyStore.removeChangeListener (this._onChange);
   },
-
   /*
    *  _onChange will fire when our MyStore object emits a "CHANGE" event,
    *  which uses MyStore.getName() in order to update its own internal state,
@@ -61,5 +57,5 @@ var App = React.createClass ({
  */
 React.render (
   <App />,
-  document.getElementById ('app-content')
+  document.body
 );

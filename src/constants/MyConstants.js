@@ -1,4 +1,3 @@
-
 var MyConstants = {
   SET_NAME : "SET_NAME"
 };

@@ -1,9 +1,4 @@
-
-/*
- *  Sample Route File --
- *  -- sample.js
- */
-var router = require ("express").Router ();
+var router = require ('express').Router ();
 
 /*
  *  This is a sample route --
@@ -13,9 +8,9 @@ router.get ('/', function (request, response) {
   /**
    ** Write your logic here
    **/
-  response.send ({
-    character : 'Bugs Bunny'
-  });
+   response.send ({
+     character : 'Hello, Route!'
+   });
 });
 
 module.exports = router;

@@ -1,122 +1,151 @@
+var gulp = require ('gulp');
+var watch = require ('gulp-watch');
+var sass = require ('gulp-sass');
+var concat = require ('gulp-concat');
+var source = require ('vinyl-source-stream');
+var browserify = require ('browserify');
+var watchify = require ('watchify');
+var reactify = require ('reactify');
+var spawn = require ('child_process').spawn;
+var del = require ('del');
+var run = require ('run-sequence');
+var SourceDirectories = require ('./utils/SourceDirectories');
 
-var gulp        = require ('gulp');
-var uglify      = require ('gulp-uglify');
-var watch       = require ('gulp-watch');
-var htmlreplace = require ('gulp-html-replace');
-var source      = require ('vinyl-source-stream');
-var browserify  = require ('browserify');
-var watchify    = require ('watchify');
-var reactify    = require ('reactify');
-var streamify   = require ('gulp-streamify');
-var clean       = require ('gulp-clean');
-var sass        = require ('gulp-sass');
-var run         = require ('run-sequence');
-
-var path = {
-  HTML         : './src/*.html',
-  ENTRY_POINT  : './src/jsx/App.jsx',
-  SASS         : 'src/sass/**/*.scss',
-  CSS          : 'src/css/**/*',
-  JS           : 'src/js/**/*',
-  DIST_CSS     : 'dist/src/css/**/*',
-  DIST_JS      : 'dist/src/js/**/*',
-  DEST         : 'dist',
-  DEST_SRC     : 'dist/src',
-  DEST_BUILD   : 'dist/build',
-  DEST_SRC_JS  : 'dist/src/js',
-  DEST_SRC_CSS : 'dist/src/css',
-  OUT          : 'js/App.js',
-  MINIFIED_OUT : 'js/App.min.js',
+var _path = {
+  ENTRY_POINT: './src/App.jsx',
+  OUTPUT_JS: 'App.js',
+  OUTPUT_CSS: 'App.css',
+  SERVER: [ './server.js', './server/**/*' ],
+  HTML: './src/*.html',
+  SASS: './src/**/*.scss',
+  REACT: [ './src/**/*.jsx', './src/**/*.js' ],
+  REACT_DIRECTORIES: SourceDirectories ('./src', 'relative'),
+  SRC: './src',
+  DIST: 'dist',
 };
 
-/*
- *  Cleans the dist/js directory.
- */
-gulp.task ('clean-js', function () {
-  return gulp.src (path.DIST_JS)
-    .pipe (clean ())
-    .on ('error', handleError);
-});
+var _NODE = null;
+var _WATCHER = null;
+var _PRODUCTION = false;
 
-/*
- *  Cleans the dist/css directory.
- */
-gulp.task ('clean-css', function () {
-  return gulp.src (path.DIST_CSS)
-    .pipe (clean ())
-    .on ('error', handleError);
-});
-
-/*
- *  Copies src/html files into the dist/ directory.
- */
-gulp.task ('clone', function () {
-  return gulp.src (path.HTML)
-    .pipe (gulp.dest (path.DEST))
-    .on('error', handleError);
-});
-
-/*
- *  Transforms Sass (foo.scss) files into regular CSS files.
- */
-gulp.task ('sass', function () {
-  return gulp.src (path.SASS)
-    .pipe (sass ().on ('error', sass.logError))
-    .on ('error', handleError)
-    .pipe (gulp.dest (path.DEST_SRC_CSS))
-    .on ('error', handleError);
-});
-
-/*
- *  Main development task
- */
-gulp.task ('watch', ['sass', 'clone'], function () {
-  var watcher  = watchify (browserify ({
-    entries   : [path.ENTRY_POINT],
-    transform : [reactify],
-     /** Tells you the jsx line num instead of the single doc line num **/
-    debug     : true,
-    fullPaths : true,
-    cache: {}, packageCache: {}
-  }));
-
-  watch (path.SASS, function () {
-    run (['clean-css'], ['sass']);
+var _browserify = function () {
+  return browserify (_path.ENTRY_POINT, {
+    cache: {},
+    debug: true,
+    transform: [ reactify ],
+    extensions: [ '.js', '.jsx' ],
+    paths: _path.REACT_DIRECTORIES,
+    packageCache: {}
   });
+};
 
-  watch (path.HTML, function () {
-    run (['clone']);
-  });
+var _getSourceDirectories = function () {
+  return SourceDirectories (_path.SRC, 'relative');
+};
 
-  return watcher.on  ('update', function () {
-    run (['clean-js'], function () {
-      /** Watches for updates and recompiles into a single js file **/
-      watcher.bundle ()
-        .on ('error', handleError)
-        .pipe (source (path.OUT))
-        .on ('error', handleError)
-        .pipe (gulp.dest (path.DEST_SRC))
-        .on ('error', handleError);
-
-        console.info ("React (JSX) files successfully updated.");
-    });
-  })
-    /** On initial load we will compile all jsx to js **/
-    .bundle ()
-    .on ('error', handleError)
-    .pipe (source(path.OUT))
-    .on ('error', handleError)
-    .pipe (gulp.dest(path.DEST_SRC))
-    .on ('error', handleError);
-});
-
-gulp.task ('default', ['watch']);
-
-/*
- *  -- Error Handler
- *  Prevents Gulp from crashing.
- *  Displays errors in console.
- */
-function handleError (error) {
+var _error = function (error) {
   console.log (error.toString ());
-}
+};
+
+gulp.task ('html', function () {
+  return gulp.src (_path.HTML)
+    .on ('error', _error)
+    .pipe (gulp.dest (_path.DIST))
+    .on('error', _error);
+});
+
+gulp.task ('sass', function () {
+  return gulp.src (_path.SASS)
+    .on ('error', _error)
+    .pipe (sass ())
+    .pipe (concat (_path.OUTPUT_CSS))
+    .pipe (gulp.dest (_path.DIST));
+});
+
+gulp.task ('watchify', function () {
+  if (_WATCHER) _WATCHER.close ();
+  _WATCHER = watchify (_browserify ());
+
+  _WATCHER
+    .bundle ()
+    .on ('error', _error)
+    .pipe (source (_path.OUTPUT_JS))
+    .on ('error', _error)
+    .pipe (gulp.dest (_path.DIST))
+    .on ('error', _error);
+});
+
+gulp.task ('browserify', function () {
+  if (_PRODUCTION) {
+    return _browserify ()
+      .bundle ()
+      .on ('error', _error)
+      .pipe (source (_path.OUTPUT_JS))
+      .on ('error', _error)
+      .pipe (gulp.dest (_path.DIST))
+      .on ('error', _error);
+  } else {
+    _WATCHER
+      .bundle ()
+      .on ('error', _error)
+      .pipe (source (_path.OUTPUT_JS))
+      .on ('error', _error)
+      .pipe (gulp.dest (_path.DIST))
+      .on ('error', _error);
+  }
+});
+
+gulp.task ('server', function () {
+  if (_NODE) _NODE.kill ();
+  _NODE = spawn ('node', ['server.js'], { stdio: 'inherit' });
+  _NODE.on ('close', function (code) {
+    if (code === 8) {
+      console.log ('Error detected; waiting for changes...');
+    }
+  })
+});
+
+gulp.task ('build', function () {
+  _PRODUCTION = true;
+  return run (['html'], ['sass'], ['browserify']);
+});
+
+gulp.task ('deploy', function () {
+  _PRODUCTION = true;
+  return run (['html'], ['sass'], ['browserify'], function () {
+    gulp.start ('server');
+  });
+});
+
+gulp.task ('start', function () {
+  return run (['html'], ['sass'], ['watchify'], function () {
+    run (['server'], function () {
+      watch (_path.SERVER, function () {
+        gulp.start ('server');
+      });
+
+      watch (_path.HTML, function () {
+        gulp.start ('html');
+      });
+
+      watch (_path.SASS, function () {
+        gulp.start ('sass');
+      });
+
+      watch (_path.REACT, function () {
+        if (_getSourceDirectories ().length !== _path.REACT_DIRECTORIES.length) {
+          _path.REACT_DIRECTORIES = _getSourceDirectories ();
+          gulp.start ('watchify');
+        } else {
+          gulp.start ('browserify');
+        }
+      });
+    })
+  })
+});
+
+gulp.task ('default', ['start']);
+
+process.on ('exit', function () {
+  if (_NODE) _NODE.kill ();
+})

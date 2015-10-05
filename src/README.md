@@ -12,7 +12,7 @@ URLs need to be specific, whether they provide data, used for getting data, etc.
 ## Tree Structure
 
 ```
-+ jsx/
++ src/
     |-- README.md
     |-- Main.jsx
     +-- actions/

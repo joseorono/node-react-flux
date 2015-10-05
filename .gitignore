@@ -1,6 +1,4 @@
 node_modules
 node_modules/*
 npm-debug.log
-dist/src/*
-dist/build/*
-dist/*.html
+dist/*

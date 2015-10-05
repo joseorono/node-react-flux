@@ -1,8 +1,3 @@
-
-/*
- *  MyStore
- */
-
 var MyDispatcher = require ('../dispatcher/MyDispatcher');
 var MyConstants  = require ('../constants/MyConstants');
 var ObjectAssign  = require ('react/lib/Object.assign');
@@ -54,8 +49,8 @@ MyDispatcher.register (function (payload) {
       setName (action.data);
 
       /*
-       *  MyStore emits a “CHANGE” event, hears that event which invokes the
-       *  callback function which was passed to it which was originally _onChange in our component.
+       *  MyStore emits a “CHANGE” event, invoking the callback function
+       *  which was passed to it which was originally _onChange in our component.
        */
       MyStore.emit (CHANGE_EVENT);
       break;
