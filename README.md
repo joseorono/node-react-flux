@@ -65,5 +65,14 @@ npm start
 
 - Open your browser and go to ```http://localhost:3003```
 
+## Running the extended application with extra examples
+
+```
+gulp --gulpfile gulpfileExtras.js
+```
+
+There should be a random number generator component and a react-threejs component that shows off some simple webgl graphics. The source
+files for the extended example code live in the "extras" folder.
+
 ## References
 - [Architecting React.js Apps with Flux](http://tylermcginnis.com/reactjs-tutorial-pt-3-architecting-react-js-apps-with-flux/) by Tyler McGinnis, April 16, 2015
