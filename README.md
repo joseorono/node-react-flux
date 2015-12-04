@@ -15,12 +15,12 @@ Mostly everything that you shouldn't be worrying about. You focus on writing you
 ## Get Started
 * Clone the repository
 ```
-git clone git@github.com:VisionistInc/node-react.git
+git clone git@github.com:VisionistInc/node-react-flux.git
 ```
 
 * Go into the cloned repository's directory
 ```
-cd node-react
+cd node-react-flux
 ```
 
 * Install dependencies
